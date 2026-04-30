@@ -1,0 +1,4213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quick Touch Waiter — Run your restaurant from your phone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* QTW Landing — design tokens & base */
+:root {
+  --orange: #FF5E00;
+  --orange-soft: #FF7A2A;
+  --orange-tint: #FFE9DB;
+  --orange-deep: #C84300;
+  --blue: #346897;
+  --blue-soft: #5B89B6;
+  --blue-tint: #E2ECF5;
+  --ink: #0E0F12;
+  --ink-2: #2A2D34;
+  --ink-3: #5A5F6B;
+  --ink-4: #8A909C;
+  --line: #E8E9EE;
+  --line-2: #F1F2F6;
+  --bg: #FFFFFF;
+  --bg-soft: #FAFAF8;
+  --bg-warm: #FFF7F1;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-2xl: 44px;
+
+  --shadow-card: 0 1px 2px rgba(14,15,18,0.04), 0 8px 24px -8px rgba(14,15,18,0.08);
+  --shadow-pop: 0 2px 4px rgba(14,15,18,0.04), 0 24px 60px -20px rgba(14,15,18,0.18);
+  --shadow-orange: 0 18px 50px -18px rgba(255,94,0,0.55);
+
+  --font-display: 'Geist', 'General Sans', system-ui, sans-serif;
+  --font-body: 'Geist', 'General Sans', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv11";
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; border: 0; background: none; }
+a { color: inherit; text-decoration: none; }
+
+.container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.eyebrow .dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--orange);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.h-display {
+  font-size: clamp(44px, 6.4vw, 88px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+.h-section {
+  font-size: clamp(34px, 4.4vw, 60px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+.h-card {
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.lede {
+  font-size: clamp(17px, 1.5vw, 20px);
+  line-height: 1.5;
+  color: var(--ink-3);
+  text-wrap: pretty;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 15.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  transition: transform .18s ease, box-shadow .25s ease, background .2s ease, color .2s ease;
+  white-space: nowrap;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: var(--orange);
+  color: #fff;
+  box-shadow: var(--shadow-orange);
+}
+.btn-primary:hover { background: #FF6B14; box-shadow: 0 22px 60px -18px rgba(255,94,0,0.7); }
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.btn-ghost:hover { background: var(--bg-soft); border-color: #DCDDE3; }
+.btn-dark {
+  background: var(--ink);
+  color: #fff;
+}
+.btn-dark:hover { background: #1c1d22; }
+.btn-sm { height: 42px; padding: 0 16px; font-size: 14px; }
+.btn-lg { height: 58px; padding: 0 26px; font-size: 16px; }
+
+.btn .arrow {
+  width: 18px; height: 18px;
+  transition: transform .25s ease;
+}
+.btn:hover .arrow { transform: translateX(3px); }
+
+/* Reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Section spacing */
+section { position: relative; }
+.section {
+  padding: clamp(80px, 10vw, 140px) 0;
+}
+.section-tight { padding: clamp(60px, 7vw, 96px) 0; }
+
+/* Subtle grain background helper */
+.grain::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.4;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+
+/* Hide scrollbars in marquee */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Phone shell */
+.phone {
+  width: 280px;
+  height: 580px;
+  border-radius: 44px;
+  background: #0E0F12;
+  padding: 10px;
+  box-shadow: 0 40px 100px -30px rgba(14,15,18,0.4), 0 8px 30px -10px rgba(14,15,18,0.2);
+  position: relative;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 36px;
+  background: #fff;
+  overflow: hidden;
+  position: relative;
+}
+.phone-notch {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92px;
+  height: 26px;
+  background: #0E0F12;
+  border-radius: 20px;
+  z-index: 5;
+}
+
+/* Animated reveal for nav border */
+.nav-border {
+  background: linear-gradient(90deg, transparent, var(--line) 20%, var(--line) 80%, transparent);
+  height: 1px;
+}
+
+/* Sticky mobile CTA */
+.mobile-cta {
+  position: fixed;
+  bottom: 16px;
+  left: 16px; right: 16px;
+  z-index: 60;
+  display: none;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 999px;
+  padding: 14px 18px 14px 22px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 24px 60px -18px rgba(14,15,18,0.5);
+  font-weight: 500;
+  font-size: 15px;
+  transform: translateY(150%);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1);
+}
+.mobile-cta.in {
+  transform: translateY(0);
+}
+.mobile-cta .pill {
+  background: var(--orange);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 13.5px;
+}
+
+@media (max-width: 720px) {
+  .mobile-cta { display: flex; }
+}
+
+/* Card hover */
+.hover-lift { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease, border-color .25s ease; }
+.hover-lift:hover { transform: translateY(-4px); }
+
+/* Tag/chip */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 28px; padding: 0 12px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* Gradient hero blob */
+.hero-blob {
+  position: absolute;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.7;
+}
+
+/* Faux UI typography for phone screens */
+.ui-mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace; }
+
+/* Footer */
+footer { background: #0B0C0F; color: #C8CAD0; }
+footer a:hover { color: #fff; }
+
+</style>
+<style>
+  /* Skeleton splash while React boots */
+  .qtw-splash {
+    position: fixed; inset: 0; background: #fff;
+    display: grid; place-items: center;
+    z-index: 100;
+    transition: opacity .35s ease;
+  }
+  .qtw-splash.gone { opacity: 0; pointer-events: none; }
+  .qtw-splash .pulse {
+    width: 36px; height: 36px; border-radius: 12px;
+    background: var(--orange);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: .9; }
+    50% { transform: scale(1.15); opacity: .6; }
+  }
+</style>
+</head>
+<body>
+<div class="qtw-splash" id="splash"><div class="pulse"></div></div>
+<div id="app"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script>
+(function(){
+// tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null ? keyOrEdits : {
+      [keyOrEdits]: val
+    };
+    setValues(prev => ({
+      ...prev,
+      ...edits
+    }));
+    window.parent.postMessage({
+      type: '__edit_mode_set_keys',
+      edits
+    }, '*');
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({
+  title = 'Tweaks',
+  children
+}) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({
+    x: 16,
+    y: 16
+  });
+  const PAD = 16;
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth,
+      h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y))
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+  React.useEffect(() => {
+    const onMsg = e => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({
+      type: '__edit_mode_available'
+    }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({
+      type: '__edit_mode_dismissed'
+    }, '*');
+  };
+  const onDragStart = e => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX,
+      sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = ev => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy)
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+  if (!open) return null;
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("style", null, __TWEAKS_STYLE), /*#__PURE__*/React.createElement("div", {
+    ref: dragRef,
+    className: "twk-panel",
+    style: {
+      right: offsetRef.current.x,
+      bottom: offsetRef.current.y
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "twk-hd",
+    onMouseDown: onDragStart
+  }, /*#__PURE__*/React.createElement("b", null, title), /*#__PURE__*/React.createElement("button", {
+    className: "twk-x",
+    "aria-label": "Close tweaks",
+    onMouseDown: e => e.stopPropagation(),
+    onClick: dismiss
+  }, "\u2715")), /*#__PURE__*/React.createElement("div", {
+    className: "twk-body"
+  }, children)));
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({
+  label,
+  children
+}) {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "twk-sect"
+  }, label), children);
+}
+function TweakRow({
+  label,
+  value,
+  children,
+  inline = false
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: inline ? 'twk-row twk-row-h' : 'twk-row'
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "twk-lbl"
+  }, /*#__PURE__*/React.createElement("span", null, label), value != null && /*#__PURE__*/React.createElement("span", {
+    className: "twk-val"
+  }, value)), children);
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({
+  label,
+  value,
+  min = 0,
+  max = 100,
+  step = 1,
+  unit = '',
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement(TweakRow, {
+    label: label,
+    value: `${value}${unit}`
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    className: "twk-slider",
+    min: min,
+    max: max,
+    step: step,
+    value: value,
+    onChange: e => onChange(Number(e.target.value))
+  }));
+}
+function TweakToggle({
+  label,
+  value,
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "twk-row twk-row-h"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "twk-lbl"
+  }, /*#__PURE__*/React.createElement("span", null, label)), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "twk-toggle",
+    "data-on": value ? '1' : '0',
+    role: "switch",
+    "aria-checked": !!value,
+    onClick: () => onChange(!value)
+  }, /*#__PURE__*/React.createElement("i", null)));
+}
+function TweakRadio({
+  label,
+  value,
+  options,
+  onChange
+}) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const opts = options.map(o => typeof o === 'object' ? o : {
+    value: o,
+    label: o
+  });
+  const idx = Math.max(0, opts.findIndex(o => o.value === value));
+  const n = opts.length;
+
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+  const segAt = clientX => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor((clientX - r.left - 2) / inner * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+  const onPointerDown = e => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = ev => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return /*#__PURE__*/React.createElement(TweakRow, {
+    label: label
+  }, /*#__PURE__*/React.createElement("div", {
+    ref: trackRef,
+    role: "radiogroup",
+    onPointerDown: onPointerDown,
+    className: dragging ? 'twk-seg dragging' : 'twk-seg'
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "twk-seg-thumb",
+    style: {
+      left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+      width: `calc((100% - 4px) / ${n})`
+    }
+  }), opts.map(o => /*#__PURE__*/React.createElement("button", {
+    key: o.value,
+    type: "button",
+    role: "radio",
+    "aria-checked": o.value === value
+  }, o.label))));
+}
+function TweakSelect({
+  label,
+  value,
+  options,
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement(TweakRow, {
+    label: label
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "twk-field",
+    value: value,
+    onChange: e => onChange(e.target.value)
+  }, options.map(o => {
+    const v = typeof o === 'object' ? o.value : o;
+    const l = typeof o === 'object' ? o.label : o;
+    return /*#__PURE__*/React.createElement("option", {
+      key: v,
+      value: v
+    }, l);
+  })));
+}
+function TweakText({
+  label,
+  value,
+  placeholder,
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement(TweakRow, {
+    label: label
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "twk-field",
+    type: "text",
+    value: value,
+    placeholder: placeholder,
+    onChange: e => onChange(e.target.value)
+  }));
+}
+function TweakNumber({
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  unit = '',
+  onChange
+}) {
+  const clamp = n => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({
+    x: 0,
+    val: 0
+  });
+  const onScrubStart = e => {
+    e.preventDefault();
+    startRef.current = {
+      x: e.clientX,
+      val: value
+    };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = ev => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "twk-num"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "twk-num-lbl",
+    onPointerDown: onScrubStart
+  }, label), /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    value: value,
+    min: min,
+    max: max,
+    step: step,
+    onChange: e => onChange(clamp(Number(e.target.value)))
+  }), unit && /*#__PURE__*/React.createElement("span", {
+    className: "twk-num-unit"
+  }, unit));
+}
+function TweakColor({
+  label,
+  value,
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "twk-row twk-row-h"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "twk-lbl"
+  }, /*#__PURE__*/React.createElement("span", null, label)), /*#__PURE__*/React.createElement("input", {
+    type: "color",
+    className: "twk-swatch",
+    value: value,
+    onChange: e => onChange(e.target.value)
+  }));
+}
+function TweakButton({
+  label,
+  onClick,
+  secondary = false
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: secondary ? 'twk-btn secondary' : 'twk-btn',
+    onClick: onClick
+  }, label);
+}
+Object.assign(window, {
+  useTweaks,
+  TweaksPanel,
+  TweakSection,
+  TweakRow,
+  TweakSlider,
+  TweakToggle,
+  TweakRadio,
+  TweakSelect,
+  TweakText,
+  TweakNumber,
+  TweakColor,
+  TweakButton
+});
+})();
+</script>
+<script>
+(function(){
+/* global React */
+const {
+  useState,
+  useEffect,
+  useRef
+} = React;
+
+/* ---------- Reusable phone shell ---------- */
+function Phone({
+  children,
+  className = "",
+  style
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: `phone ${className}`,
+    style: style
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "phone-notch"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "phone-screen"
+  }, children));
+}
+
+/* status bar inside a phone */
+function StatusBar({
+  time = "9:41",
+  dark = false
+}) {
+  const c = dark ? "#fff" : "#0E0F12";
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "14px 24px 8px",
+      fontSize: 13,
+      fontWeight: 600,
+      color: c,
+      letterSpacing: "-0.01em"
+    }
+  }, /*#__PURE__*/React.createElement("span", null, time), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 5
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "11",
+    viewBox: "0 0 16 11",
+    fill: "none"
+  }, [2, 5, 8, 11].map((h, i) => /*#__PURE__*/React.createElement("rect", {
+    key: i,
+    x: i * 4,
+    y: 11 - h,
+    width: "3",
+    height: h,
+    rx: "0.5",
+    fill: c
+  }))), /*#__PURE__*/React.createElement("svg", {
+    width: "14",
+    height: "11",
+    viewBox: "0 0 14 11",
+    fill: "none"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M7 9.5l1.5-1.5a2 2 0 0 0-3 0L7 9.5zM7 6.5l3-3a6 6 0 0 0-6 0l3 3zm0-3l4.5-4.5a8 8 0 0 0-9 0L7 3.5z",
+    fill: c,
+    fillOpacity: ".9"
+  })), /*#__PURE__*/React.createElement("svg", {
+    width: "22",
+    height: "11",
+    viewBox: "0 0 22 11",
+    fill: "none"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "0.5",
+    y: "0.5",
+    width: "18",
+    height: "10",
+    rx: "2.5",
+    stroke: c,
+    strokeOpacity: ".4"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "2",
+    y: "2",
+    width: "15",
+    height: "7",
+    rx: "1.2",
+    fill: c
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "19.5",
+    y: "3.5",
+    width: "1.5",
+    height: "4",
+    rx: "0.5",
+    fill: c,
+    fillOpacity: ".4"
+  }))));
+}
+
+/* ---------- Phone variant: Customer Menu ---------- */
+function PhoneMenu() {
+  return /*#__PURE__*/React.createElement(Phone, null, /*#__PURE__*/React.createElement(StatusBar, null), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "8px 18px 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginTop: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--ink-4)",
+      letterSpacing: ".06em",
+      textTransform: "uppercase"
+    }
+  }, "Table 14"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 600,
+      letterSpacing: "-0.02em",
+      marginTop: 2
+    }
+  }, "Cantina Verde")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 32,
+      height: 32,
+      borderRadius: 999,
+      background: "var(--orange-tint)",
+      display: "grid",
+      placeItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 14,
+      height: 14,
+      borderRadius: 999,
+      background: "var(--orange)"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 14,
+      height: 38,
+      borderRadius: 12,
+      background: "#F4F4F2",
+      display: "flex",
+      alignItems: "center",
+      padding: "0 12px",
+      gap: 8,
+      fontSize: 12.5,
+      color: "var(--ink-4)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "14",
+    height: "14",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.2"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "11",
+    cy: "11",
+    r: "7"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M21 21l-4-4"
+  })), "Search the menu"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      marginTop: 14,
+      overflow: "hidden"
+    }
+  }, ["All", "Starters", "Mains", "Desserts", "Drinks"].map((c, i) => /*#__PURE__*/React.createElement("div", {
+    key: c,
+    style: {
+      height: 28,
+      padding: "0 12px",
+      display: "flex",
+      alignItems: "center",
+      borderRadius: 999,
+      fontSize: 11.5,
+      fontWeight: 500,
+      background: i === 1 ? "var(--ink)" : "#F4F4F2",
+      color: i === 1 ? "#fff" : "var(--ink-3)",
+      flexShrink: 0
+    }
+  }, c))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 14,
+      display: "flex",
+      flexDirection: "column",
+      gap: 10
+    }
+  }, [{
+    name: "Burrata & Heirloom Tomato",
+    price: "12.50",
+    tag: "Chef's pick",
+    color: "linear-gradient(135deg,#FFE9DB,#FFD0AE)"
+  }, {
+    name: "Truffle Tagliatelle",
+    price: "18.00",
+    tag: "Bestseller",
+    color: "linear-gradient(135deg,#F1E7DC,#E2D2BE)"
+  }, {
+    name: "Catch of the day",
+    price: "24.00",
+    tag: "Fresh",
+    color: "linear-gradient(135deg,#E2ECF5,#B6CCE0)"
+  }].map(it => /*#__PURE__*/React.createElement("div", {
+    key: it.name,
+    style: {
+      display: "flex",
+      gap: 10,
+      padding: 8,
+      borderRadius: 14,
+      background: "#fff",
+      border: "1px solid #F1F2F6"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 56,
+      height: 56,
+      borderRadius: 10,
+      background: it.color,
+      flexShrink: 0
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9.5,
+      color: "var(--orange)",
+      fontWeight: 600,
+      letterSpacing: ".04em",
+      textTransform: "uppercase"
+    }
+  }, it.tag), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 600,
+      marginTop: 2,
+      lineHeight: 1.15
+    }
+  }, it.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--ink-3)",
+      marginTop: 4
+    }
+  }, "\u20AC", it.price)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 28,
+      height: 28,
+      borderRadius: 999,
+      background: "var(--ink)",
+      color: "#fff",
+      display: "grid",
+      placeItems: "center",
+      alignSelf: "center",
+      fontSize: 18,
+      lineHeight: 1,
+      fontWeight: 400
+    }
+  }, "+"))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      left: 14,
+      right: 14,
+      bottom: 14,
+      height: 48,
+      borderRadius: 16,
+      background: "var(--orange)",
+      color: "#fff",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "0 16px",
+      fontSize: 13,
+      fontWeight: 500,
+      boxShadow: "0 14px 30px -10px rgba(255,94,0,0.55)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "rgba(255,255,255,.22)",
+      padding: "2px 8px",
+      borderRadius: 999,
+      fontSize: 11.5
+    }
+  }, "3"), "View order"), /*#__PURE__*/React.createElement("div", null, "\u20AC42.50")));
+}
+
+/* ---------- Phone variant: Owner Dashboard ---------- */
+function PhoneDashboard() {
+  return /*#__PURE__*/React.createElement(Phone, null, /*#__PURE__*/React.createElement(StatusBar, null), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "8px 18px 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--ink-4)"
+    }
+  }, "Today \xB7 Sun"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 17,
+      fontWeight: 600,
+      letterSpacing: "-0.02em"
+    }
+  }, "Overview")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 28,
+      height: 28,
+      borderRadius: 999,
+      background: "#F4F4F2"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 28,
+      height: 28,
+      borderRadius: 999,
+      background: "#F4F4F2"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 12,
+      padding: 14,
+      borderRadius: 16,
+      background: "linear-gradient(135deg, #0E0F12 0%, #2A2D34 100%)",
+      color: "#fff",
+      position: "relative",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10.5,
+      color: "rgba(255,255,255,.55)",
+      letterSpacing: ".06em",
+      textTransform: "uppercase"
+    }
+  }, "Revenue today"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 28,
+      fontWeight: 600,
+      letterSpacing: "-0.02em",
+      marginTop: 4
+    }
+  }, "\u20AC2,847"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10.5,
+      color: "var(--orange)",
+      background: "rgba(255,94,0,.18)",
+      padding: "1px 6px",
+      borderRadius: 4
+    }
+  }, "+18%"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "rgba(255,255,255,.55)"
+    }
+  }, "vs last Sun")), /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 200 50",
+    width: "100%",
+    height: "42",
+    style: {
+      marginTop: 8
+    },
+    preserveAspectRatio: "none"
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
+    id: "g",
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#FF5E00",
+    stopOpacity: ".5"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#FF5E00",
+    stopOpacity: "0"
+  }))), /*#__PURE__*/React.createElement("path", {
+    d: "M0 38 L20 32 L40 36 L60 22 L80 28 L100 18 L120 24 L140 12 L160 16 L180 8 L200 14 L200 50 L0 50 Z",
+    fill: "url(#g)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M0 38 L20 32 L40 36 L60 22 L80 28 L100 18 L120 24 L140 12 L160 16 L180 8 L200 14",
+    stroke: "#FF5E00",
+    strokeWidth: "1.5",
+    fill: "none"
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 10,
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 8
+    }
+  }, [{
+    l: "Orders",
+    v: "184"
+  }, {
+    l: "Avg ticket",
+    v: "€15.50"
+  }, {
+    l: "Tips",
+    v: "€312"
+  }, {
+    l: "Tables",
+    v: "92%"
+  }].map(s => /*#__PURE__*/React.createElement("div", {
+    key: s.l,
+    style: {
+      padding: 10,
+      borderRadius: 12,
+      background: "#FAFAF8",
+      border: "1px solid #F1F2F6"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: "var(--ink-4)",
+      textTransform: "uppercase",
+      letterSpacing: ".05em"
+    }
+  }, s.l), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 600,
+      marginTop: 2,
+      letterSpacing: "-0.01em"
+    }
+  }, s.v)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      color: "var(--ink-3)",
+      marginBottom: 6,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between"
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "Live orders"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 5,
+      color: "var(--ink-4)",
+      fontWeight: 500
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 6,
+      height: 6,
+      borderRadius: 999,
+      background: "#22C55E"
+    }
+  }), "real-time")), [{
+    t: "T14",
+    item: "Burrata + 2 mains",
+    v: "€68"
+  }, {
+    t: "T08",
+    item: "Tagliatelle, dessert",
+    v: "€34"
+  }].map(o => /*#__PURE__*/React.createElement("div", {
+    key: o.t,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "8px 10px",
+      borderRadius: 10,
+      background: "#fff",
+      border: "1px solid #F1F2F6",
+      marginBottom: 4
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 28,
+      height: 28,
+      borderRadius: 8,
+      background: "var(--orange-tint)",
+      color: "var(--orange-deep)",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 10,
+      fontWeight: 600
+    }
+  }, o.t), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--ink-2)"
+    }
+  }, o.item)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 600
+    }
+  }, o.v))))));
+}
+
+/* ---------- Phone variant: Tip flow ---------- */
+function PhoneTip() {
+  return /*#__PURE__*/React.createElement(Phone, null, /*#__PURE__*/React.createElement(StatusBar, null), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "20px 22px 0",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--ink-4)",
+      letterSpacing: ".06em",
+      textTransform: "uppercase"
+    }
+  }, "Add a tip"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 22,
+      fontWeight: 600,
+      marginTop: 6,
+      letterSpacing: "-0.02em",
+      lineHeight: 1.15
+    }
+  }, "Anna served you", /*#__PURE__*/React.createElement("br", null), "tonight \u2728"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: "22px auto 0",
+      width: 132,
+      height: 132,
+      borderRadius: 999,
+      background: "linear-gradient(135deg, #FFE9DB, #FFC9A0)",
+      display: "grid",
+      placeItems: "center",
+      position: "relative",
+      border: "6px solid #fff",
+      boxShadow: "0 18px 40px -12px rgba(255,94,0,0.35)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 32,
+      fontWeight: 600,
+      letterSpacing: "-0.02em",
+      color: "var(--orange-deep)"
+    }
+  }, "\u20AC8.00")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      justifyContent: "center",
+      marginTop: 22
+    }
+  }, ["10%", "15%", "20%", "Custom"].map((p, i) => /*#__PURE__*/React.createElement("div", {
+    key: p,
+    style: {
+      flex: 1,
+      height: 42,
+      borderRadius: 14,
+      background: i === 2 ? "var(--ink)" : "#F4F4F2",
+      color: i === 2 ? "#fff" : "var(--ink-2)",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 12.5,
+      fontWeight: 500
+    }
+  }, p))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 16,
+      padding: 12,
+      background: "#FAFAF8",
+      borderRadius: 14,
+      border: "1px solid #F1F2F6",
+      textAlign: "left"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 12
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--ink-3)"
+    }
+  }, "Subtotal"), /*#__PURE__*/React.createElement("span", null, "\u20AC42.50")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 12,
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--ink-3)"
+    }
+  }, "Tip (20%)"), /*#__PURE__*/React.createElement("span", null, "\u20AC8.00")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 1,
+      background: "#F1F2F6",
+      margin: "8px 0"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 13.5,
+      fontWeight: 600
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "Total"), /*#__PURE__*/React.createElement("span", null, "\u20AC50.50")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      left: 14,
+      right: 14,
+      bottom: 14,
+      height: 48,
+      borderRadius: 16,
+      background: "var(--ink)",
+      color: "#fff",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 13.5,
+      fontWeight: 500
+    }
+  }, "Pay \u20AC50.50 with Apple Pay"));
+}
+window.Phone = Phone;
+window.PhoneMenu = PhoneMenu;
+window.PhoneDashboard = PhoneDashboard;
+window.PhoneTip = PhoneTip;
+})();
+</script>
+<script>
+(function(){
+/* global React, PhoneMenu, PhoneDashboard, PhoneTip */
+const {
+  useEffect: useEff1,
+  useRef: useRef1,
+  useState: useState1
+} = React;
+
+/* ---------- Reusable: animated counter ---------- */
+function Counter({
+  to,
+  suffix = "",
+  duration = 1400,
+  decimals = 0
+}) {
+  const [val, setVal] = useState1(0);
+  const ref = useRef1(null);
+  const started = useRef1(false);
+  useEff1(() => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !started.current) {
+          started.current = true;
+          const start = performance.now();
+          const tick = t => {
+            const k = Math.min(1, (t - start) / duration);
+            const eased = 1 - Math.pow(1 - k, 3);
+            setVal(to * eased);
+            if (k < 1) requestAnimationFrame(tick);else setVal(to);
+          };
+          requestAnimationFrame(tick);
+        }
+      });
+    }, {
+      threshold: 0.4
+    });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [to, duration]);
+  const display = decimals === 0 ? Math.round(val).toLocaleString() : val.toFixed(decimals);
+  return /*#__PURE__*/React.createElement("span", {
+    ref: ref
+  }, display, suffix);
+}
+
+/* ---------- Nav ---------- */
+function Nav() {
+  const [scrolled, setScrolled] = useState1(false);
+  useEff1(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return /*#__PURE__*/React.createElement("header", {
+    style: {
+      position: "sticky",
+      top: 0,
+      zIndex: 50,
+      background: scrolled ? "rgba(255,255,255,0.82)" : "rgba(255,255,255,0)",
+      backdropFilter: scrolled ? "saturate(180%) blur(14px)" : "none",
+      WebkitBackdropFilter: scrolled ? "saturate(180%) blur(14px)" : "none",
+      borderBottom: scrolled ? "1px solid var(--line)" : "1px solid transparent",
+      transition: "background .25s ease, border-color .25s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container",
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      height: 72
+    }
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      fontWeight: 600,
+      letterSpacing: "-0.02em",
+      fontSize: 18
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 28,
+      height: 28,
+      borderRadius: 8,
+      background: "var(--ink)",
+      color: "#fff",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 14,
+      fontWeight: 600,
+      position: "relative",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      inset: 0,
+      background: "linear-gradient(135deg, var(--orange) 0%, transparent 60%)"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "relative"
+    }
+  }, "Q")), "Quick Touch Waiter"), /*#__PURE__*/React.createElement("nav", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 28,
+      fontSize: 14,
+      color: "var(--ink-2)"
+    },
+    className: "qtw-nav-links"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "#features"
+  }, "Features"), /*#__PURE__*/React.createElement("a", {
+    href: "#pricing"
+  }, "Pricing"), /*#__PURE__*/React.createElement("a", {
+    href: "#how"
+  }, "How it works"), /*#__PURE__*/React.createElement("a", {
+    href: "#faq"
+  }, "FAQ")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    className: "btn btn-ghost btn-sm qtw-signin"
+  }, "Sign in"), /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    className: "btn btn-primary btn-sm"
+  }, "Start Free", /*#__PURE__*/React.createElement("svg", {
+    className: "arrow",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 12h14M13 5l7 7-7 7"
+  }))))), /*#__PURE__*/React.createElement("style", null, `
+        @media (max-width: 880px) {
+          .qtw-nav-links { display: none; }
+        }
+        @media (max-width: 560px) {
+          .qtw-signin { display: none; }
+        }
+      `));
+}
+
+/* ---------- Hero ---------- */
+function Hero() {
+  return /*#__PURE__*/React.createElement("section", {
+    style: {
+      position: "relative",
+      overflow: "hidden",
+      paddingTop: "clamp(40px, 6vw, 80px)",
+      paddingBottom: "clamp(60px, 8vw, 120px)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hero-blob",
+    style: {
+      width: 600,
+      height: 600,
+      top: -200,
+      right: -160,
+      background: "radial-gradient(circle, rgba(255,94,0,0.45), transparent 60%)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "hero-blob",
+    style: {
+      width: 480,
+      height: 480,
+      top: 80,
+      left: -160,
+      background: "radial-gradient(circle, rgba(52,104,151,0.18), transparent 60%)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "container",
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      marginBottom: 22
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "chip",
+    style: {
+      background: "#fff",
+      borderColor: "var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 6,
+      height: 6,
+      borderRadius: 999,
+      background: "var(--orange)"
+    }
+  }), "New \xB7 Live in 30 minutes \u2014 no card required")), /*#__PURE__*/React.createElement("h1", {
+    className: "h-display reveal",
+    style: {
+      textAlign: "center",
+      maxWidth: 980,
+      margin: "0 auto"
+    }
+  }, "Run your restaurant", /*#__PURE__*/React.createElement("br", null), "from your ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      background: "linear-gradient(135deg, var(--orange) 0%, var(--orange-soft) 100%)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      backgroundClip: "text"
+    }
+  }, "customer's phone"), "."), /*#__PURE__*/React.createElement("p", {
+    className: "lede reveal",
+    style: {
+      textAlign: "center",
+      maxWidth: 620,
+      margin: "26px auto 0"
+    }
+  }, "Launch in 30 minutes. \u20AC0 upfront. Turn your menu into a digital sales machine \u2014 orders, payments, reservations and tips, all in one system."), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      display: "flex",
+      gap: 12,
+      justifyContent: "center",
+      marginTop: 32,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    className: "btn btn-primary btn-lg"
+  }, "Start Free", /*#__PURE__*/React.createElement("svg", {
+    className: "arrow",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 12h14M13 5l7 7-7 7"
+  }))), /*#__PURE__*/React.createElement("a", {
+    href: "#how",
+    className: "btn btn-ghost btn-lg"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "10"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M10 8l6 4-6 4z",
+    fill: "currentColor",
+    stroke: "none"
+  })), "See how it works")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      color: "var(--ink-4)",
+      fontSize: 13,
+      marginTop: 18
+    }
+  }, "More orders \xB7 lower costs \xB7 faster service"), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 70,
+      position: "relative",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "flex-end",
+      gap: 28,
+      perspective: 1400
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      transform: "rotateY(8deg) rotateZ(-3deg) translateY(20px) scale(0.85)",
+      filter: "drop-shadow(0 30px 50px rgba(14,15,18,.18))",
+      transformOrigin: "center bottom"
+    }
+  }, /*#__PURE__*/React.createElement(PhoneMenu, null)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      transform: "translateY(-30px) scale(1.02)",
+      filter: "drop-shadow(0 50px 80px rgba(14,15,18,.25))",
+      zIndex: 2
+    }
+  }, /*#__PURE__*/React.createElement(PhoneDashboard, null)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      transform: "rotateY(-8deg) rotateZ(3deg) translateY(20px) scale(0.85)",
+      filter: "drop-shadow(0 30px 50px rgba(14,15,18,.18))",
+      transformOrigin: "center bottom"
+    }
+  }, /*#__PURE__*/React.createElement(PhoneTip, null))), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 80,
+      padding: "24px 28px",
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: "var(--r-lg)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 24,
+      flexWrap: "wrap",
+      boxShadow: "var(--shadow-card)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--ink-3)",
+      letterSpacing: ".04em",
+      textTransform: "uppercase",
+      fontWeight: 500
+    }
+  }, "Everything runs from your customer's phone \u2014 you stay in full control"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 22,
+      alignItems: "center",
+      flexWrap: "wrap"
+    }
+  }, [{
+    v: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Counter, {
+      to: 30
+    }), "min"),
+    l: "to launch"
+  }, {
+    v: /*#__PURE__*/React.createElement(React.Fragment, null, "\u20AC", /*#__PURE__*/React.createElement(Counter, {
+      to: 0
+    })),
+    l: "upfront"
+  }, {
+    v: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Counter, {
+      to: 92
+    }), "%"),
+    l: "tables filled"
+  }, {
+    v: /*#__PURE__*/React.createElement(React.Fragment, null, "+", /*#__PURE__*/React.createElement(Counter, {
+      to: 18
+    }), "%"),
+    l: "avg ticket"
+  }].map((s, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      alignItems: "baseline",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 22,
+      fontWeight: 600,
+      letterSpacing: "-0.02em"
+    }
+  }, s.v), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: "var(--ink-4)"
+    }
+  }, s.l)))))));
+}
+
+/* ---------- Problem / Solution ---------- */
+function ProblemSolution() {
+  return /*#__PURE__*/React.createElement("section", {
+    className: "section",
+    style: {
+      background: "var(--bg-soft)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      maxWidth: 800,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "One simple system"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18
+    }
+  }, "Everything your restaurant needs.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--ink-3)"
+    }
+  }, "Without the spaghetti of apps.")), /*#__PURE__*/React.createElement("p", {
+    className: "lede",
+    style: {
+      marginTop: 18
+    }
+  }, "Stop juggling apps, terminals and staff overload. Take orders, accept payments, manage reservations and collect tips \u2014 directly from your customer's phone.")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal ps-grid",
+    style: {
+      marginTop: 60,
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 24,
+      alignItems: "stretch"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hover-lift",
+    style: {
+      background: "#fff",
+      border: "1px solid var(--line)",
+      borderRadius: "var(--r-lg)",
+      padding: 32,
+      position: "relative",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "chip",
+    style: {
+      background: "#FCE9E9",
+      borderColor: "#F5C9C9",
+      color: "#9B2A2A"
+    }
+  }, "Before"), /*#__PURE__*/React.createElement("h3", {
+    className: "h-card",
+    style: {
+      marginTop: 14
+    }
+  }, "5 apps. 3 terminals. One headache."), /*#__PURE__*/React.createElement("ul", {
+    style: {
+      listStyle: "none",
+      padding: 0,
+      margin: "20px 0 0",
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, ["POS terminal with monthly fees", "Separate reservation app", "Third-party delivery commissions", "Paper menus, printed weekly", "Staff training every hire"].map(t => /*#__PURE__*/React.createElement("li", {
+    key: t,
+    style: {
+      display: "flex",
+      gap: 12,
+      alignItems: "flex-start",
+      fontSize: 14.5,
+      color: "var(--ink-2)",
+      lineHeight: 1.4
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 18,
+      height: 18,
+      borderRadius: 999,
+      background: "#F5DCDC",
+      color: "#9B2A2A",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 11,
+      fontWeight: 600,
+      flexShrink: 0,
+      marginTop: 2
+    }
+  }, "\xD7"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      textDecoration: "line-through",
+      textDecorationColor: "rgba(0,0,0,0.18)"
+    }
+  }, t))))), /*#__PURE__*/React.createElement("div", {
+    className: "hover-lift",
+    style: {
+      background: "linear-gradient(180deg, #FFF7F1 0%, #fff 100%)",
+      border: "1px solid var(--orange-tint)",
+      borderRadius: "var(--r-lg)",
+      padding: 32,
+      position: "relative",
+      overflow: "hidden",
+      boxShadow: "var(--shadow-card)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "chip",
+    style: {
+      background: "var(--orange-tint)",
+      borderColor: "transparent",
+      color: "var(--orange-deep)"
+    }
+  }, "With Quick Touch Waiter"), /*#__PURE__*/React.createElement("h3", {
+    className: "h-card",
+    style: {
+      marginTop: 14
+    }
+  }, "One link. One dashboard. One bill."), /*#__PURE__*/React.createElement("ul", {
+    style: {
+      listStyle: "none",
+      padding: 0,
+      margin: "20px 0 0",
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, ["Tap-to-pay anywhere, no terminal", "Reservations + waitlist built in", "Direct ordering, your customers, your data", "QR menu, instant updates, zero printing", "Onboarding in 30 minutes — no training"].map(t => /*#__PURE__*/React.createElement("li", {
+    key: t,
+    style: {
+      display: "flex",
+      gap: 12,
+      alignItems: "flex-start",
+      fontSize: 14.5,
+      color: "var(--ink)",
+      lineHeight: 1.4
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 18,
+      height: 18,
+      borderRadius: 999,
+      background: "var(--orange)",
+      color: "#fff",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 11,
+      fontWeight: 600,
+      flexShrink: 0,
+      marginTop: 2
+    }
+  }, "\u2713"), t))))), /*#__PURE__*/React.createElement("style", null, `
+          @media (max-width: 820px) {
+            .ps-grid { grid-template-columns: 1fr !important; }
+          }
+        `)));
+}
+
+/* ---------- Pricing teaser ---------- */
+function Pricing({
+  useBlue
+}) {
+  return /*#__PURE__*/React.createElement("section", {
+    id: "pricing",
+    className: "section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      maxWidth: 780,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "Pricing"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18
+    }
+  }, "No monthly fees.", /*#__PURE__*/React.createElement("br", null), "You pay only when you earn."), /*#__PURE__*/React.createElement("p", {
+    className: "lede",
+    style: {
+      marginTop: 18
+    }
+  }, "No subscriptions. No upfront costs. No surprises. Simple, transparent pricing \u2014 aligned with your revenue.")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 56,
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: 16
+    },
+    id: "pricing-grid"
+  }, [{
+    t: "Online Payments",
+    v: "1.4%",
+    s: "+ €0.20 per transaction",
+    d: "Card payments processed instantly. No card terminal required.",
+    accent: "var(--orange)"
+  }, {
+    t: "Tap to Pay",
+    v: "0.9%",
+    s: "per in-person tap",
+    d: "Turn any phone into a payment terminal. No hardware to buy.",
+    accent: useBlue ? "var(--blue)" : "var(--orange)",
+    featured: true
+  }, {
+    t: "Tips",
+    v: "0%",
+    s: "100% to your staff",
+    d: "Smart prompt at checkout. Direct, transparent, instant payout.",
+    accent: "var(--orange)"
+  }].map((p, i) => /*#__PURE__*/React.createElement("div", {
+    key: p.t,
+    className: "hover-lift",
+    style: {
+      padding: 28,
+      borderRadius: "var(--r-lg)",
+      background: p.featured ? "var(--ink)" : "#fff",
+      color: p.featured ? "#fff" : "var(--ink)",
+      border: p.featured ? "1px solid var(--ink)" : "1px solid var(--line)",
+      position: "relative",
+      boxShadow: p.featured ? "var(--shadow-pop)" : "var(--shadow-card)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: p.featured ? "rgba(255,255,255,.6)" : "var(--ink-3)",
+      letterSpacing: ".04em",
+      textTransform: "uppercase",
+      fontWeight: 500
+    }
+  }, p.t), p.featured && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: p.accent,
+      color: "#fff",
+      fontSize: 10.5,
+      fontWeight: 600,
+      letterSpacing: ".05em",
+      textTransform: "uppercase",
+      padding: "3px 9px",
+      borderRadius: 999,
+      whiteSpace: "nowrap"
+    }
+  }, "Popular")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 18,
+      display: "flex",
+      alignItems: "baseline",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 56,
+      fontWeight: 600,
+      letterSpacing: "-0.03em",
+      lineHeight: 1,
+      color: p.accent
+    }
+  }, p.v)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      color: p.featured ? "rgba(255,255,255,.7)" : "var(--ink-3)",
+      marginTop: 6
+    }
+  }, p.s), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 1,
+      background: p.featured ? "rgba(255,255,255,.12)" : "var(--line)",
+      margin: "22px 0"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14.5,
+      lineHeight: 1.5,
+      color: p.featured ? "rgba(255,255,255,.8)" : "var(--ink-2)"
+    }
+  }, p.d)))), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      marginTop: 28,
+      fontSize: 14,
+      color: "var(--ink-3)"
+    }
+  }, "Simple, transparent pricing \u2014 aligned with your revenue."), /*#__PURE__*/React.createElement("style", null, `
+          @media (max-width: 880px) {
+            #pricing-grid { grid-template-columns: 1fr !important; }
+          }
+        `)));
+}
+window.Nav = Nav;
+window.Hero = Hero;
+window.ProblemSolution = ProblemSolution;
+window.Pricing = Pricing;
+window.QtwCounter = Counter;
+})();
+</script>
+<script>
+(function(){
+/* global React, QtwCounter */
+const {
+  useEffect: useEff2,
+  useRef: useRef2,
+  useState: useState2
+} = React;
+
+/* ---------- Value Proposition (6 tools grid) ---------- */
+function ValueProp({
+  useBlue
+}) {
+  const tools = [{
+    t: "QR Menu",
+    d: "No printing. Instant updates. Your menu, always live.",
+    icon: "qr"
+  }, {
+    t: "Guest App",
+    d: "Direct customer interaction — orders, profile, history.",
+    icon: "guest"
+  }, {
+    t: "Tips",
+    d: "Increase staff income effortlessly. 100% to your team.",
+    icon: "tip"
+  }, {
+    t: "Website",
+    d: "A beautiful, mobile-first restaurant website in minutes.",
+    icon: "site"
+  }, {
+    t: "Online Ordering",
+    d: "Boost takeaway and delivery without commissions.",
+    icon: "order"
+  }, {
+    t: "Analytics",
+    d: "Track what really matters. Sell smarter, not louder.",
+    icon: "chart"
+  }];
+  const Icon = ({
+    name
+  }) => {
+    const c = useBlue ? "var(--blue)" : "var(--orange)";
+    const props = {
+      width: 22,
+      height: 22,
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: c,
+      strokeWidth: 1.7,
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    };
+    switch (name) {
+      case "qr":
+        return /*#__PURE__*/React.createElement("svg", props, /*#__PURE__*/React.createElement("rect", {
+          x: "3",
+          y: "3",
+          width: "7",
+          height: "7",
+          rx: "1.5"
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: "14",
+          y: "3",
+          width: "7",
+          height: "7",
+          rx: "1.5"
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: "3",
+          y: "14",
+          width: "7",
+          height: "7",
+          rx: "1.5"
+        }), /*#__PURE__*/React.createElement("path", {
+          d: "M14 14h3v3h-3zM20 14v3M14 20h3M20 20v1"
+        }));
+      case "guest":
+        return /*#__PURE__*/React.createElement("svg", props, /*#__PURE__*/React.createElement("circle", {
+          cx: "12",
+          cy: "8",
+          r: "3.5"
+        }), /*#__PURE__*/React.createElement("path", {
+          d: "M5 21c1-4 4-6 7-6s6 2 7 6"
+        }));
+      case "tip":
+        return /*#__PURE__*/React.createElement("svg", props, /*#__PURE__*/React.createElement("path", {
+          d: "M12 2v20M16 6H10a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6H8"
+        }));
+      case "site":
+        return /*#__PURE__*/React.createElement("svg", props, /*#__PURE__*/React.createElement("rect", {
+          x: "3",
+          y: "4",
+          width: "18",
+          height: "16",
+          rx: "2"
+        }), /*#__PURE__*/React.createElement("path", {
+          d: "M3 8h18M7 4v4"
+        }));
+      case "order":
+        return /*#__PURE__*/React.createElement("svg", props, /*#__PURE__*/React.createElement("path", {
+          d: "M3 5h2l3 11h11l3-8H7"
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: "9",
+          cy: "20",
+          r: "1.5"
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: "18",
+          cy: "20",
+          r: "1.5"
+        }));
+      case "chart":
+        return /*#__PURE__*/React.createElement("svg", props, /*#__PURE__*/React.createElement("path", {
+          d: "M3 21h18"
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: "6",
+          y: "13",
+          width: "3",
+          height: "6",
+          rx: "1"
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: "11",
+          y: "9",
+          width: "3",
+          height: "10",
+          rx: "1"
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: "16",
+          y: "5",
+          width: "3",
+          height: "14",
+          rx: "1"
+        }));
+      default:
+        return null;
+    }
+  };
+  return /*#__PURE__*/React.createElement("section", {
+    className: "section",
+    style: {
+      background: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "flex-end",
+      gap: 40,
+      flexWrap: "wrap",
+      marginBottom: 56
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 620
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "Value"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18
+    }
+  }, "All the tools you need", /*#__PURE__*/React.createElement("br", null), "to grow \u2014 starting at \u20AC0.")), /*#__PURE__*/React.createElement("p", {
+    className: "lede",
+    style: {
+      maxWidth: 360
+    }
+  }, "Replace expensive systems with one powerful platform. Switch on what you need, ignore what you don't.")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: 16
+    },
+    id: "vp-grid"
+  }, tools.map((tool, i) => /*#__PURE__*/React.createElement("div", {
+    key: tool.t,
+    className: "hover-lift",
+    style: {
+      padding: 28,
+      borderRadius: "var(--r-lg)",
+      background: "var(--bg-soft)",
+      border: "1px solid var(--line)",
+      display: "flex",
+      flexDirection: "column",
+      minHeight: 240
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      background: "#fff",
+      border: "1px solid var(--line)",
+      display: "grid",
+      placeItems: "center",
+      marginBottom: 28
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: tool.icon
+  })), /*#__PURE__*/React.createElement("h3", {
+    className: "h-card",
+    style: {
+      fontSize: 19
+    }
+  }, tool.t), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 14.5,
+      color: "var(--ink-3)",
+      marginTop: 8,
+      marginBottom: 0,
+      lineHeight: 1.5
+    }
+  }, tool.d), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 20,
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      fontSize: 13,
+      color: useBlue ? "var(--blue)" : "var(--orange)",
+      fontWeight: 500
+    }
+  }, "Learn more", /*#__PURE__*/React.createElement("svg", {
+    width: "14",
+    height: "14",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 12h14M13 5l7 7-7 7"
+  })))))), /*#__PURE__*/React.createElement("style", null, `
+          @media (max-width: 980px) { #vp-grid { grid-template-columns: 1fr 1fr !important; } }
+          @media (max-width: 620px) { #vp-grid { grid-template-columns: 1fr !important; } }
+        `)));
+}
+
+/* ---------- POS Replacement — full-bleed orange section ---------- */
+function POSReplacement() {
+  return /*#__PURE__*/React.createElement("section", {
+    className: "section",
+    style: {
+      background: "linear-gradient(180deg, var(--orange) 0%, #FF7A2A 100%)",
+      color: "#fff",
+      position: "relative",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: -100,
+      right: -100,
+      width: 480,
+      height: 480,
+      borderRadius: "50%",
+      background: "radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%)",
+      pointerEvents: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      bottom: -160,
+      left: -120,
+      width: 360,
+      height: 360,
+      borderRadius: "50%",
+      background: "radial-gradient(circle, rgba(0,0,0,0.18), transparent 60%)",
+      pointerEvents: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "container",
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      maxWidth: 880
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow",
+    style: {
+      color: "rgba(255,255,255,0.75)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot",
+    style: {
+      background: "#fff"
+    }
+  }), "POS Replacement"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18,
+      color: "#fff"
+    }
+  }, "Stop paying for POS systems", /*#__PURE__*/React.createElement("br", null), "you don't control."), /*#__PURE__*/React.createElement("p", {
+    className: "lede",
+    style: {
+      marginTop: 22,
+      color: "rgba(255,255,255,0.85)",
+      maxWidth: 600
+    }
+  }, "Outdated hardware. Monthly fees. Middlemen taking a cut of every order. There's a cleaner way to run a modern restaurant.")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 64,
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: 18
+    },
+    id: "pos-grid"
+  }, [{
+    k: "Own",
+    v: "your customers",
+    d: "Direct relationships, no platform between you and your guests."
+  }, {
+    k: "Own",
+    v: "your data",
+    d: "Every order, every guest, every insight — yours, exportable."
+  }, {
+    k: "Own",
+    v: "your revenue",
+    d: "Skip the marketplace commissions. Keep what you earn."
+  }].map(c => /*#__PURE__*/React.createElement("div", {
+    key: c.v,
+    className: "hover-lift",
+    style: {
+      padding: 32,
+      borderRadius: "var(--r-lg)",
+      background: "rgba(255,255,255,0.08)",
+      border: "1px solid rgba(255,255,255,0.18)",
+      backdropFilter: "blur(8px)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "rgba(255,255,255,0.7)",
+      letterSpacing: ".04em",
+      textTransform: "uppercase",
+      fontWeight: 500
+    }
+  }, c.k), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 32,
+      fontWeight: 600,
+      letterSpacing: "-0.025em",
+      marginTop: 6
+    }
+  }, c.v), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 14.5,
+      color: "rgba(255,255,255,0.78)",
+      marginTop: 16,
+      marginBottom: 0,
+      lineHeight: 1.5
+    }
+  }, c.d)))), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 64,
+      paddingTop: 40,
+      borderTop: "1px solid rgba(255,255,255,0.18)",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 24,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "clamp(22px, 2.4vw, 32px)",
+      fontWeight: 600,
+      letterSpacing: "-0.02em",
+      maxWidth: 600
+    }
+  }, "Your restaurant \u2014 your rules."), /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    className: "btn",
+    style: {
+      background: "#fff",
+      color: "var(--orange)",
+      height: 56,
+      padding: "0 26px",
+      fontSize: 15.5,
+      fontWeight: 500,
+      boxShadow: "0 16px 30px -10px rgba(0,0,0,0.25)"
+    }
+  }, "Take back control", /*#__PURE__*/React.createElement("svg", {
+    className: "arrow",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 12h14M13 5l7 7-7 7"
+  })))), /*#__PURE__*/React.createElement("style", null, `
+          @media (max-width: 900px) { #pos-grid { grid-template-columns: 1fr !important; } }
+        `)));
+}
+
+/* ---------- Benefits + How it Works ---------- */
+function Benefits() {
+  return /*#__PURE__*/React.createElement("section", {
+    className: "section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      maxWidth: 800,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "Benefits"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18
+    }
+  }, "Serve faster. Earn more.", /*#__PURE__*/React.createElement("br", null), "Stress less.")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 56,
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: 20
+    },
+    id: "b-grid"
+  }, [{
+    big: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(QtwCounter, {
+      to: 30
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: "0.5em",
+        color: "var(--ink-3)",
+        fontWeight: 500
+      }
+    }, " min")),
+    t: "Go live in 30 minutes",
+    d: "Sign up, upload your menu, share the QR. That's it."
+  }, {
+    big: /*#__PURE__*/React.createElement(React.Fragment, null, "Any", /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "block",
+        fontSize: "0.6em"
+      }
+    }, "device")),
+    t: "No installation needed",
+    d: "Works on any phone, tablet, or computer with a browser."
+  }, {
+    big: /*#__PURE__*/React.createElement(React.Fragment, null, "\u20AC", /*#__PURE__*/React.createElement(QtwCounter, {
+      to: 0
+    })),
+    t: "No monthly fees — ever",
+    d: "Pay a small cut only when guests pay. Otherwise, free."
+  }].map((b, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "hover-lift",
+    style: {
+      padding: 32,
+      borderRadius: "var(--r-lg)",
+      background: "#fff",
+      border: "1px solid var(--line)",
+      boxShadow: "var(--shadow-card)",
+      display: "flex",
+      flexDirection: "column"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "clamp(48px, 5.5vw, 72px)",
+      fontWeight: 600,
+      letterSpacing: "-0.04em",
+      lineHeight: 1,
+      color: "var(--ink)"
+    }
+  }, b.big), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 1,
+      background: "var(--line)",
+      margin: "24px 0"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "h-card",
+    style: {
+      fontSize: 18
+    }
+  }, b.t), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 14,
+      color: "var(--ink-3)",
+      marginTop: 8,
+      marginBottom: 0
+    }
+  }, b.d)))), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      marginTop: 32,
+      fontSize: 15,
+      color: "var(--ink-3)"
+    }
+  }, "Do more with less staff and fewer errors."), /*#__PURE__*/React.createElement("style", null, `
+          @media (max-width: 900px) { #b-grid { grid-template-columns: 1fr !important; } }
+        `)));
+}
+function HowItWorks() {
+  const steps = [{
+    n: "01",
+    t: "Create your account",
+    d: "Sign up with email. No card, no contract — just a fast onboarding flow that takes 2 minutes.",
+    visual: "account"
+  }, {
+    n: "02",
+    t: "Upload your menu",
+    d: "Type, paste, import or scan. We auto-translate, auto-categorize, and generate beautiful menu cards.",
+    visual: "menu"
+  }, {
+    n: "03",
+    t: "Start receiving orders",
+    d: "Print one QR code, place it on the table. The first order arrives — usually within minutes.",
+    visual: "live"
+  }];
+  return /*#__PURE__*/React.createElement("section", {
+    id: "how",
+    className: "section",
+    style: {
+      background: "var(--bg-soft)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      maxWidth: 800,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "How it works"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18
+    }
+  }, "From setup to first order", /*#__PURE__*/React.createElement("br", null), "in 30 minutes.")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 64,
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: 20,
+      position: "relative"
+    },
+    id: "how-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 32,
+      left: "16%",
+      right: "16%",
+      height: 2,
+      background: "repeating-linear-gradient(90deg, var(--ink-4) 0 4px, transparent 4px 10px)",
+      opacity: 0.35
+    },
+    className: "how-connector"
+  }), steps.map(s => /*#__PURE__*/React.createElement("div", {
+    key: s.n,
+    className: "hover-lift",
+    style: {
+      background: "#fff",
+      borderRadius: "var(--r-lg)",
+      border: "1px solid var(--line)",
+      padding: 28,
+      position: "relative",
+      boxShadow: "var(--shadow-card)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 64,
+      height: 64,
+      borderRadius: 999,
+      background: "var(--orange-tint)",
+      color: "var(--orange-deep)",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 18,
+      fontWeight: 600,
+      letterSpacing: "-0.01em",
+      marginBottom: 20
+    }
+  }, s.n), /*#__PURE__*/React.createElement("h3", {
+    className: "h-card",
+    style: {
+      fontSize: 20
+    }
+  }, s.t), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 14.5,
+      color: "var(--ink-3)",
+      marginTop: 10,
+      lineHeight: 1.5
+    }
+  }, s.d), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 24,
+      height: 140,
+      borderRadius: 14,
+      background: s.visual === "account" ? "linear-gradient(135deg, #FFF7F1, #FFE9DB)" : s.visual === "menu" ? "linear-gradient(135deg, #F4F4F2, #E8E9EE)" : "linear-gradient(135deg, #FFE9DB, #FFD0AE)",
+      position: "relative",
+      overflow: "hidden",
+      display: "grid",
+      placeItems: "center",
+      border: "1px solid var(--line-2)"
+    }
+  }, s.visual === "account" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "70%",
+      padding: 12,
+      background: "#fff",
+      borderRadius: 10,
+      boxShadow: "0 4px 14px -4px rgba(0,0,0,.08)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 6,
+      width: "40%",
+      background: "#E8E9EE",
+      borderRadius: 4
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 22,
+      marginTop: 8,
+      background: "#F4F4F2",
+      borderRadius: 6
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 22,
+      marginTop: 6,
+      background: "#F4F4F2",
+      borderRadius: 6
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 22,
+      marginTop: 8,
+      background: "var(--ink)",
+      borderRadius: 6
+    }
+  })), s.visual === "menu" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "80%",
+      display: "flex",
+      flexDirection: "column",
+      gap: 4
+    }
+  }, [1, 2, 3].map(i => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      gap: 8,
+      alignItems: "center",
+      background: "#fff",
+      padding: 6,
+      borderRadius: 8,
+      boxShadow: "0 2px 8px -3px rgba(0,0,0,.06)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 24,
+      height: 24,
+      borderRadius: 5,
+      background: i === 2 ? "var(--orange-tint)" : "#F4F4F2"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 4,
+      width: `${50 + i * 10}%`,
+      background: "#E8E9EE",
+      borderRadius: 3
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 4,
+      width: "30%",
+      background: "#F1F2F6",
+      borderRadius: 3,
+      marginTop: 3
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 4,
+      width: 18,
+      background: "var(--orange)",
+      borderRadius: 3
+    }
+  })))), s.visual === "live" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
+      width: "70%"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      fontSize: 11,
+      color: "var(--orange-deep)",
+      fontWeight: 600
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 8,
+      height: 8,
+      borderRadius: 999,
+      background: "var(--orange)",
+      boxShadow: "0 0 0 6px rgba(255,94,0,.2)"
+    }
+  }), "LIVE"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 8,
+      display: "flex",
+      flexDirection: "column",
+      gap: 4
+    }
+  }, ["Order #142 · €38", "Order #143 · €22", "Order #144 · €56"].map((o, i) => /*#__PURE__*/React.createElement("div", {
+    key: o,
+    style: {
+      background: "#fff",
+      padding: "6px 10px",
+      borderRadius: 8,
+      fontSize: 11,
+      fontWeight: 500,
+      color: "var(--ink-2)",
+      boxShadow: "0 2px 6px -2px rgba(0,0,0,.06)",
+      opacity: 1 - i * 0.2
+    }
+  }, o)))))))), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      marginTop: 32,
+      fontSize: 15,
+      color: "var(--ink-3)"
+    }
+  }, "No training. No tech skills needed."), /*#__PURE__*/React.createElement("style", null, `
+          @media (max-width: 900px) {
+            #how-grid { grid-template-columns: 1fr !important; }
+            .how-connector { display: none; }
+          }
+        `)));
+}
+window.ValueProp = ValueProp;
+window.POSReplacement = POSReplacement;
+window.Benefits = Benefits;
+window.HowItWorks = HowItWorks;
+})();
+</script>
+<script>
+(function(){
+/* global React, PhoneMenu, PhoneDashboard, PhoneTip */
+const {
+  useEffect: useEff3,
+  useRef: useRef3,
+  useState: useState3
+} = React;
+
+/* ---------- Features (tabbed) ---------- */
+function Features({
+  useBlue
+}) {
+  const tabs = [{
+    key: "ordering",
+    label: "Ordering & Service",
+    head: "Let guests order from their phone — instantly.",
+    sub: "Faster service, fewer mistakes, higher table turnover. The order goes from table to kitchen in one tap.",
+    points: ["QR ordering at table", "Smart upsells & combos", "Real-time kitchen tickets", "Multi-language menu"]
+  }, {
+    key: "payments",
+    label: "Payments",
+    head: "Accept payments anywhere, anytime.",
+    sub: "Reduce wait time and increase cash flow. Tap-to-pay on any phone, split bills, Apple Pay, Google Pay — all included.",
+    points: ["Tap to Pay on iPhone & Android", "Split bills & shared tabs", "Apple Pay / Google Pay", "Instant payouts"]
+  }, {
+    key: "growth",
+    label: "Sales & Marketing",
+    head: "Turn every guest into a returning customer.",
+    sub: "Built-in tools for growth — loyalty, vouchers, automated win-back campaigns, all powered by your own customer data.",
+    points: ["Loyalty & rewards", "Email & SMS campaigns", "Customer segments", "Win-back automation"]
+  }, {
+    key: "ops",
+    label: "Management",
+    head: "Control everything in real time.",
+    sub: "From orders to staff performance — one dashboard for every location, every shift, every metric that matters.",
+    points: ["Multi-location overview", "Staff performance", "Inventory alerts", "Daily close-out reports"]
+  }, {
+    key: "analytics",
+    label: "Analytics",
+    head: "See what sells, when, and why.",
+    sub: "Optimize your profits with clean, actionable data. We highlight what's working and flag what isn't.",
+    points: ["Bestseller tracking", "Time-of-day heatmaps", "Margin analysis", "Cohort retention"]
+  }];
+  const [active, setActive] = useState3("ordering");
+  const t = tabs.find(x => x.key === active);
+  return /*#__PURE__*/React.createElement("section", {
+    id: "features",
+    className: "section",
+    style: {
+      background: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      maxWidth: 800,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "Features"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18
+    }
+  }, "One platform.", /*#__PURE__*/React.createElement("br", null), "Five superpowers.")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 48,
+      padding: 6,
+      background: "var(--bg-soft)",
+      border: "1px solid var(--line)",
+      borderRadius: 999,
+      display: "inline-flex",
+      overflowX: "auto",
+      maxWidth: "100%",
+      gap: 4
+    },
+    id: "feat-tabs-wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      margin: "0 auto"
+    }
+  }, tabs.map(x => /*#__PURE__*/React.createElement("button", {
+    key: x.key,
+    onClick: () => setActive(x.key),
+    style: {
+      padding: "10px 18px",
+      fontSize: 14,
+      fontWeight: 500,
+      borderRadius: 999,
+      background: active === x.key ? "var(--ink)" : "transparent",
+      color: active === x.key ? "#fff" : "var(--ink-2)",
+      whiteSpace: "nowrap",
+      transition: "all .25s ease"
+    }
+  }, x.label)))), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 36,
+      display: "grid",
+      gridTemplateColumns: "1.05fr 1fr",
+      gap: 40,
+      alignItems: "center",
+      background: "var(--bg-soft)",
+      borderRadius: "var(--r-2xl)",
+      padding: "clamp(28px, 4vw, 56px)",
+      border: "1px solid var(--line)"
+    },
+    id: "feat-panel"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "chip",
+    style: {
+      background: "#fff"
+    }
+  }, t.label), /*#__PURE__*/React.createElement("h3", {
+    style: {
+      fontSize: "clamp(28px, 3.6vw, 44px)",
+      fontWeight: 600,
+      letterSpacing: "-0.025em",
+      lineHeight: 1.05,
+      marginTop: 18
+    }
+  }, t.head), /*#__PURE__*/React.createElement("p", {
+    className: "lede",
+    style: {
+      marginTop: 18
+    }
+  }, t.sub), /*#__PURE__*/React.createElement("ul", {
+    style: {
+      listStyle: "none",
+      padding: 0,
+      margin: "28px 0 0",
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 12
+    }
+  }, t.points.map(p => /*#__PURE__*/React.createElement("li", {
+    key: p,
+    style: {
+      display: "flex",
+      gap: 10,
+      alignItems: "center",
+      fontSize: 14,
+      color: "var(--ink-2)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 22,
+      height: 22,
+      borderRadius: 999,
+      background: useBlue ? "var(--blue-tint)" : "var(--orange-tint)",
+      color: useBlue ? "var(--blue)" : "var(--orange-deep)",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 12
+    }
+  }, "\u2713"), p))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 32
+    }
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    className: "btn btn-dark btn-sm"
+  }, "Explore ", t.label.toLowerCase(), /*#__PURE__*/React.createElement("svg", {
+    className: "arrow",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 12h14M13 5l7 7-7 7"
+  }))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
+      display: "grid",
+      placeItems: "center",
+      minHeight: 440
+    }
+  }, /*#__PURE__*/React.createElement(FeatureVisual, {
+    which: active
+  }))), /*#__PURE__*/React.createElement("style", null, `
+          @media (max-width: 900px) {
+            #feat-panel { grid-template-columns: 1fr !important; }
+            #feat-tabs-wrap { width: 100%; justify-content: flex-start; }
+          }
+        `)));
+}
+function FeatureVisual({
+  which
+}) {
+  if (which === "ordering") return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
+      width: "100%",
+      display: "grid",
+      placeItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      transform: "scale(0.92)"
+    }
+  }, /*#__PURE__*/React.createElement(PhoneMenu, null)));
+  if (which === "payments") return /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      maxWidth: 460,
+      padding: 32,
+      background: "#fff",
+      borderRadius: "var(--r-lg)",
+      boxShadow: "var(--shadow-pop)",
+      border: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--ink-4)",
+      textTransform: "uppercase",
+      letterSpacing: ".06em",
+      fontWeight: 500
+    }
+  }, "Tap to Pay"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 14,
+      fontSize: 38,
+      fontWeight: 600,
+      letterSpacing: "-0.025em"
+    }
+  }, "\u20AC48.20"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--ink-3)"
+    }
+  }, "Table 14 \xB7 4 guests"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 24,
+      padding: 16,
+      background: "var(--bg-soft)",
+      borderRadius: 14,
+      border: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--ink-3)"
+    }
+  }, "Hold card or device near phone"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 14,
+      height: 80,
+      borderRadius: 12,
+      background: "linear-gradient(135deg, var(--ink) 0%, #2A2D34 100%)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "#fff",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "22",
+    height: "22",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "4"
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 500
+    }
+  }, "Scanning\u2026"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 8,
+      marginTop: 14
+    }
+  }, ["Apple Pay", "Google Pay", "Visa ••8821", "Split bill"].map((m, i) => /*#__PURE__*/React.createElement("div", {
+    key: m,
+    style: {
+      padding: "10px 14px",
+      borderRadius: 10,
+      background: i === 0 ? "var(--ink)" : "#fff",
+      color: i === 0 ? "#fff" : "var(--ink-2)",
+      border: i === 0 ? "1px solid var(--ink)" : "1px solid var(--line)",
+      fontSize: 13,
+      fontWeight: 500
+    }
+  }, m))));
+  if (which === "growth") return /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      maxWidth: 460,
+      background: "#fff",
+      borderRadius: "var(--r-lg)",
+      boxShadow: "var(--shadow-pop)",
+      border: "1px solid var(--line)",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: 24,
+      borderBottom: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "var(--ink-4)",
+      textTransform: "uppercase",
+      letterSpacing: ".06em",
+      fontWeight: 500
+    }
+  }, "Campaign"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 22,
+      fontWeight: 600,
+      letterSpacing: "-0.02em",
+      marginTop: 4
+    }
+  }, "Win back: lapsed guests"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 14,
+      display: "flex",
+      gap: 10,
+      fontSize: 12.5,
+      color: "var(--ink-3)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "chip"
+  }, "SMS"), /*#__PURE__*/React.createElement("span", {
+    className: "chip"
+  }, "62 guests"), /*#__PURE__*/React.createElement("span", {
+    className: "chip"
+  }, "\u20AC8 voucher"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: 24
+    }
+  }, [{
+    l: "Sent",
+    v: "62",
+    c: "var(--ink)"
+  }, {
+    l: "Opened",
+    v: "54",
+    c: "var(--ink)"
+  }, {
+    l: "Redeemed",
+    v: "23",
+    c: "var(--orange)"
+  }, {
+    l: "Revenue",
+    v: "€842",
+    c: "var(--orange)"
+  }].map((s, i) => /*#__PURE__*/React.createElement("div", {
+    key: s.l,
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "12px 0",
+      borderBottom: i < 3 ? "1px dashed var(--line)" : "none"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "var(--ink-3)"
+    }
+  }, s.l), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 600,
+      letterSpacing: "-0.01em",
+      color: s.c
+    }
+  }, s.v))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 16,
+      padding: 14,
+      background: "var(--orange-tint)",
+      borderRadius: 12,
+      fontSize: 13,
+      color: "var(--orange-deep)"
+    }
+  }, "ROI ", /*#__PURE__*/React.createElement("strong", null, "10.5\xD7"), " \xB7 \u20AC842 from \u20AC80 spend")));
+  if (which === "ops") return /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      maxWidth: 480,
+      padding: 24,
+      background: "#fff",
+      borderRadius: "var(--r-lg)",
+      boxShadow: "var(--shadow-pop)",
+      border: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--ink-4)",
+      textTransform: "uppercase",
+      letterSpacing: ".06em",
+      fontWeight: 500
+    }
+  }, "Locations \xB7 today"), [{
+    n: "Cantina Verde · Centro",
+    v: "€2,847",
+    t: 92,
+    d: "+18%"
+  }, {
+    n: "Cantina Verde · Borgo",
+    v: "€1,938",
+    t: 78,
+    d: "+9%"
+  }, {
+    n: "Cantina Verde · Marina",
+    v: "€2,210",
+    t: 84,
+    d: "+12%"
+  }].map((l, i) => /*#__PURE__*/React.createElement("div", {
+    key: l.n,
+    style: {
+      marginTop: 14,
+      padding: 14,
+      borderRadius: 12,
+      border: "1px solid var(--line)",
+      background: i === 0 ? "var(--bg-soft)" : "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "baseline"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 600
+    }
+  }, l.n), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--orange)",
+      fontWeight: 600
+    }
+  }, l.d)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 22,
+      fontWeight: 600,
+      letterSpacing: "-0.02em"
+    }
+  }, l.v), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
+      width: 80,
+      height: 6,
+      background: "var(--line)",
+      borderRadius: 999
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      inset: 0,
+      width: `${l.t}%`,
+      background: "var(--orange)",
+      borderRadius: 999
+    }
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: "var(--ink-3)"
+    }
+  }, l.t, "%"))))));
+  if (which === "analytics") return /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      maxWidth: 460,
+      padding: 28,
+      background: "#fff",
+      borderRadius: "var(--r-lg)",
+      boxShadow: "var(--shadow-pop)",
+      border: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--ink-4)",
+      textTransform: "uppercase",
+      letterSpacing: ".06em",
+      fontWeight: 500
+    }
+  }, "Last 30 days"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "baseline",
+      gap: 12,
+      marginTop: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 40,
+      fontWeight: 600,
+      letterSpacing: "-0.025em"
+    }
+  }, "\u20AC84,210"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "var(--orange)",
+      fontWeight: 600
+    }
+  }, "+24%")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 22
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "var(--ink-4)",
+      textTransform: "uppercase",
+      letterSpacing: ".06em",
+      marginBottom: 8
+    }
+  }, "When you sell"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(14, 1fr)",
+      gap: 3
+    }
+  }, Array.from({
+    length: 7 * 14
+  }).map((_, i) => {
+    const v = Math.random();
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      style: {
+        aspectRatio: "1",
+        borderRadius: 3,
+        background: `rgba(255,94,0,${0.05 + v * 0.85})`
+      }
+    });
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 22,
+      padding: 14,
+      background: "var(--bg-soft)",
+      borderRadius: 12,
+      fontSize: 13,
+      color: "var(--ink-2)"
+    }
+  }, /*#__PURE__*/React.createElement("strong", null, "Insight:"), " Fridays 19:00\u201321:00 drive 32% of weekly revenue. Consider a staffed pre-booking promo."));
+}
+
+/* ---------- Trusted strip ---------- */
+function TrustedStrip() {
+  const items = ["Cantina Verde", "Sole & Mare", "Bistro Nord", "Forno 28", "Café Lumière", "Hanok BBQ", "Tasca del Puerto", "Maison Saffron", "Kafé Aurora", "Brasserie Ouest"];
+  return /*#__PURE__*/React.createElement("section", {
+    style: {
+      padding: "60px 0",
+      background: "#fff",
+      borderTop: "1px solid var(--line)",
+      borderBottom: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center",
+      fontSize: 13,
+      color: "var(--ink-3)",
+      letterSpacing: ".06em",
+      textTransform: "uppercase",
+      fontWeight: 500
+    }
+  }, "Trusted by modern restaurants \u2014 real results, real growth"), /*#__PURE__*/React.createElement("div", {
+    className: "marquee-mask reveal",
+    style: {
+      marginTop: 28,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 48,
+      animation: "marquee 40s linear infinite",
+      width: "max-content"
+    }
+  }, [...items, ...items].map((n, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      fontSize: 22,
+      fontWeight: 500,
+      letterSpacing: "-0.01em",
+      color: "var(--ink-3)",
+      whiteSpace: "nowrap",
+      fontFamily: i % 3 === 0 ? "Georgia, serif" : "inherit",
+      fontStyle: i % 4 === 1 ? "italic" : "normal"
+    }
+  }, n)))), /*#__PURE__*/React.createElement("style", null, `
+          @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+          }
+        `)));
+}
+
+/* ---------- Testimonial ---------- */
+function Testimonial() {
+  return /*#__PURE__*/React.createElement("section", {
+    className: "section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      maxWidth: 980,
+      margin: "0 auto",
+      padding: "clamp(40px, 5vw, 64px)",
+      borderRadius: "var(--r-2xl)",
+      background: "linear-gradient(135deg, #FFF7F1 0%, #fff 60%)",
+      border: "1px solid var(--orange-tint)",
+      position: "relative",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "48",
+    height: "48",
+    viewBox: "0 0 24 24",
+    fill: "var(--orange)",
+    style: {
+      opacity: 0.18,
+      position: "absolute",
+      top: 24,
+      right: 32
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M9 7H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2v2a2 2 0 0 1-2 2H4v2h1a4 4 0 0 0 4-4V7zm12 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2v2a2 2 0 0 1-2 2h-1v2h1a4 4 0 0 0 4-4V7z"
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "clamp(22px, 2.6vw, 32px)",
+      fontWeight: 500,
+      letterSpacing: "-0.02em",
+      lineHeight: 1.25,
+      color: "var(--ink)"
+    }
+  }, "\"We replaced four systems with one. Our average ticket is up 18%, our team takes home more in tips, and onboarding new staff went from a week to a single afternoon.\""), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 32,
+      display: "flex",
+      alignItems: "center",
+      gap: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 48,
+      height: 48,
+      borderRadius: 999,
+      background: "linear-gradient(135deg, var(--orange-soft), var(--orange-deep))"
+    }
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 600
+    }
+  }, "Marta Cavallini"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--ink-3)"
+    }
+  }, "Owner, Cantina Verde \xB7 3 locations, Milan"))))));
+}
+
+/* ---------- FAQ ---------- */
+function FAQ() {
+  const items = [{
+    q: "Is there really no monthly fee?",
+    a: "Correct. You only pay a small percentage on transactions when guests pay through the platform. Everything else — menu, ordering, reservations, dashboard — is included."
+  }, {
+    q: "How long does setup actually take?",
+    a: "Most restaurants are live in under 30 minutes. You sign up, paste or import your menu, print one QR per table — and the first order can arrive the same evening."
+  }, {
+    q: "Do I need new hardware?",
+    a: "No. Quick Touch Waiter runs on any phone, tablet or computer with a browser. If you have an iPhone or modern Android, you can already accept payments via Tap to Pay."
+  }, {
+    q: "Can I export my data?",
+    a: "Always. Every guest, order and payment is yours. CSV and API exports are available on every plan."
+  }, {
+    q: "What about multiple locations?",
+    a: "Manage every location from one dashboard. Compare performance, share menus, set per-location pricing and staff."
+  }, {
+    q: "Which countries do you support?",
+    a: "We're live across the EU and UK with localized payments, taxes and languages. Other regions are rolling out throughout 2026."
+  }];
+  const [open, setOpen] = useState3(0);
+  return /*#__PURE__*/React.createElement("section", {
+    id: "faq",
+    className: "section",
+    style: {
+      background: "var(--bg-soft)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container",
+    style: {
+      maxWidth: 880
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "FAQ"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18
+    }
+  }, "Questions, answered.")), /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      marginTop: 48,
+      display: "flex",
+      flexDirection: "column",
+      gap: 8
+    }
+  }, items.map((it, i) => {
+    const isOpen = open === i;
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      style: {
+        background: "#fff",
+        borderRadius: "var(--r-md)",
+        border: "1px solid var(--line)",
+        overflow: "hidden",
+        transition: "border-color .25s ease"
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => setOpen(isOpen ? -1 : i),
+      style: {
+        width: "100%",
+        padding: "20px 22px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        textAlign: "left",
+        fontSize: 16.5,
+        fontWeight: 500,
+        color: "var(--ink)"
+      }
+    }, it.q, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 32,
+        height: 32,
+        borderRadius: 999,
+        background: isOpen ? "var(--ink)" : "var(--bg-soft)",
+        color: isOpen ? "#fff" : "var(--ink-2)",
+        display: "grid",
+        placeItems: "center",
+        transition: "all .25s ease",
+        flexShrink: 0
+      }
+    }, /*#__PURE__*/React.createElement("svg", {
+      width: "14",
+      height: "14",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2.4",
+      style: {
+        transform: isOpen ? "rotate(45deg)" : "none",
+        transition: "transform .25s ease"
+      }
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M12 5v14M5 12h14"
+    })))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxHeight: isOpen ? 240 : 0,
+        transition: "max-height .35s cubic-bezier(.2,.7,.2,1)",
+        overflow: "hidden"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "0 22px 22px",
+        fontSize: 15,
+        color: "var(--ink-3)",
+        lineHeight: 1.55
+      }
+    }, it.a)));
+  }))));
+}
+
+/* ---------- Final CTA ---------- */
+function FinalCTA() {
+  return /*#__PURE__*/React.createElement("section", {
+    className: "section",
+    style: {
+      background: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "reveal",
+    style: {
+      padding: "clamp(48px, 7vw, 96px)",
+      borderRadius: "var(--r-2xl)",
+      background: "radial-gradient(120% 100% at 0% 0%, #1A1B1F 0%, #0E0F12 60%)",
+      color: "#fff",
+      position: "relative",
+      overflow: "hidden",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: -80,
+      right: -80,
+      width: 360,
+      height: 360,
+      borderRadius: "50%",
+      background: "radial-gradient(circle, rgba(255,94,0,0.4), transparent 60%)",
+      filter: "blur(40px)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow",
+    style: {
+      color: "rgba(255,255,255,0.5)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "Start today \u2014 zero risk"), /*#__PURE__*/React.createElement("h2", {
+    className: "h-section",
+    style: {
+      marginTop: 18,
+      color: "#fff"
+    }
+  }, "Your digital restaurant", /*#__PURE__*/React.createElement("br", null), "is one click away."), /*#__PURE__*/React.createElement("p", {
+    className: "lede",
+    style: {
+      marginTop: 22,
+      color: "rgba(255,255,255,0.75)",
+      maxWidth: 520,
+      margin: "22px auto 0"
+    }
+  }, "No contracts. No subscriptions. Full control. Try Quick Touch Waiter free \u2014 and turn tonight's service into tomorrow's growth story."), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      justifyContent: "center",
+      marginTop: 32,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    className: "btn btn-primary btn-lg"
+  }, "Start Free", /*#__PURE__*/React.createElement("svg", {
+    className: "arrow",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 12h14M13 5l7 7-7 7"
+  }))), /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    className: "btn",
+    style: {
+      background: "rgba(255,255,255,0.1)",
+      color: "#fff",
+      border: "1px solid rgba(255,255,255,0.18)",
+      height: 58,
+      padding: "0 26px",
+      fontSize: 16
+    }
+  }, "Book a 15-min demo")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 32,
+      display: "flex",
+      justifyContent: "center",
+      gap: 28,
+      flexWrap: "wrap",
+      fontSize: 13.5,
+      color: "rgba(255,255,255,0.6)"
+    }
+  }, ["Free to start", "Live in 30 minutes", "Works anywhere"].map(b => /*#__PURE__*/React.createElement("div", {
+    key: b,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 18,
+      height: 18,
+      borderRadius: 999,
+      background: "rgba(255,94,0,0.2)",
+      color: "var(--orange-soft)",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 11
+    }
+  }, "\u2713"), b)))))));
+}
+
+/* ---------- Footer ---------- */
+function Footer() {
+  return /*#__PURE__*/React.createElement("footer", {
+    style: {
+      paddingTop: 80,
+      paddingBottom: 32
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "container"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "1.5fr 1fr 1fr 1fr",
+      gap: 40
+    },
+    id: "footer-grid"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      fontWeight: 600,
+      fontSize: 18,
+      color: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 28,
+      height: 28,
+      borderRadius: 8,
+      background: "var(--orange)",
+      display: "grid",
+      placeItems: "center",
+      color: "#fff",
+      fontWeight: 600,
+      fontSize: 14
+    }
+  }, "Q"), "Quick Touch Waiter"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      marginTop: 18,
+      fontSize: 14.5,
+      color: "#9498A1",
+      maxWidth: 320,
+      lineHeight: 1.55
+    }
+  }, "The all-in-one growth platform for restaurants, caf\xE9s, food courts, dark kitchens and multi-location food businesses."), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 24,
+      display: "flex",
+      gap: 10
+    }
+  }, ["X", "in", "ig", "yt"].map(n => /*#__PURE__*/React.createElement("a", {
+    key: n,
+    href: "#",
+    style: {
+      width: 36,
+      height: 36,
+      borderRadius: 999,
+      background: "#1A1C20",
+      display: "grid",
+      placeItems: "center",
+      fontSize: 12,
+      fontWeight: 500,
+      color: "#C8CAD0"
+    }
+  }, n)))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#6E727A",
+      textTransform: "uppercase",
+      letterSpacing: ".06em",
+      fontWeight: 500,
+      marginBottom: 18
+    }
+  }, "Product"), ["Features", "Pricing", "How it works", "Integrations", "Changelog"].map(l => /*#__PURE__*/React.createElement("a", {
+    key: l,
+    href: "#",
+    style: {
+      display: "block",
+      padding: "6px 0",
+      fontSize: 14.5
+    }
+  }, l))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#6E727A",
+      textTransform: "uppercase",
+      letterSpacing: ".06em",
+      fontWeight: 500,
+      marginBottom: 18
+    }
+  }, "Company"), ["About", "Customers", "Careers", "Contact", "Press"].map(l => /*#__PURE__*/React.createElement("a", {
+    key: l,
+    href: "#",
+    style: {
+      display: "block",
+      padding: "6px 0",
+      fontSize: 14.5
+    }
+  }, l))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#6E727A",
+      textTransform: "uppercase",
+      letterSpacing: ".06em",
+      fontWeight: 500,
+      marginBottom: 18
+    }
+  }, "Legal"), ["Privacy Policy", "Terms of Service", "Cookies", "DPA"].map(l => /*#__PURE__*/React.createElement("a", {
+    key: l,
+    href: "#",
+    style: {
+      display: "block",
+      padding: "6px 0",
+      fontSize: 14.5
+    }
+  }, l)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 60,
+      paddingTop: 24,
+      borderTop: "1px solid #1A1C20",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 16,
+      flexWrap: "wrap",
+      fontSize: 13,
+      color: "#6E727A"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, "\xA9 2026 Quick Touch Waiter, S.r.l. \u2014 All rights reserved."), /*#__PURE__*/React.createElement("div", null, "Made for restaurants worldwide.")), /*#__PURE__*/React.createElement("style", null, `
+          @media (max-width: 780px) {
+            #footer-grid { grid-template-columns: 1fr 1fr !important; }
+          }
+          @media (max-width: 460px) {
+            #footer-grid { grid-template-columns: 1fr !important; }
+          }
+        `)));
+}
+window.Features = Features;
+window.TrustedStrip = TrustedStrip;
+window.Testimonial = Testimonial;
+window.FAQ = FAQ;
+window.FinalCTA = FinalCTA;
+window.QtwFooter = Footer;
+})();
+</script>
+<script>
+(function(){
+/* global React, ReactDOM, useTweaks, TweaksPanel, TweakSection, TweakSelect, TweakToggle,
+   Nav, Hero, ProblemSolution, Pricing, ValueProp, POSReplacement, Benefits, HowItWorks,
+   Features, TrustedStrip, Testimonial, FAQ, FinalCTA, QtwFooter */
+
+const {
+  useEffect,
+  useState
+} = React;
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "fontPair": "geist",
+  "useBlue": false
+} /*EDITMODE-END*/;
+const FONT_PAIRS = {
+  geist: {
+    label: "Geist (modern grotesque)",
+    display: "Geist",
+    body: "Geist",
+    googleImport: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap"
+  },
+  inter_serif: {
+    label: "Inter Tight + Fraunces",
+    display: "Inter Tight",
+    body: "Inter Tight",
+    googleImport: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap"
+  },
+  manrope: {
+    label: "Manrope (friendly sans)",
+    display: "Manrope",
+    body: "Manrope",
+    googleImport: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+  },
+  spaceg: {
+    label: "Space Grotesk + General Sans",
+    display: "Space Grotesk",
+    body: "Space Grotesk",
+    googleImport: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+  },
+  archivo: {
+    label: "Archivo (editorial)",
+    display: "Archivo",
+    body: "Archivo",
+    googleImport: "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap"
+  }
+};
+function applyFontPair(key) {
+  const p = FONT_PAIRS[key] || FONT_PAIRS.geist;
+  // inject font link
+  let link = document.getElementById("qtw-font-link");
+  if (!link) {
+    link = document.createElement("link");
+    link.id = "qtw-font-link";
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+  }
+  link.href = p.googleImport;
+  document.documentElement.style.setProperty("--font-display", `'${p.display}', system-ui, sans-serif`);
+  document.documentElement.style.setProperty("--font-body", `'${p.body}', system-ui, sans-serif`);
+}
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal");
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add("in");
+          obs.unobserve(e.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: "0px 0px -60px 0px"
+    });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  });
+}
+function MobileStickyCTA() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShow(window.scrollY > 600);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return /*#__PURE__*/React.createElement("div", {
+    className: `mobile-cta ${show ? "in" : ""}`
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "rgba(255,255,255,0.6)",
+      fontWeight: 400
+    }
+  }, "Live in 30 minutes \xB7 \u20AC0 upfront"), /*#__PURE__*/React.createElement("div", null, "Try Quick Touch Waiter")), /*#__PURE__*/React.createElement("a", {
+    href: "#",
+    className: "pill"
+  }, "Start Free"));
+}
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  useReveal();
+  useEffect(() => {
+    applyFontPair(tweaks.fontPair);
+  }, [tweaks.fontPair]);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Nav, null), /*#__PURE__*/React.createElement(Hero, null), /*#__PURE__*/React.createElement(ProblemSolution, null), /*#__PURE__*/React.createElement(Pricing, {
+    useBlue: tweaks.useBlue
+  }), /*#__PURE__*/React.createElement(ValueProp, {
+    useBlue: tweaks.useBlue
+  }), /*#__PURE__*/React.createElement(POSReplacement, null), /*#__PURE__*/React.createElement(Benefits, null), /*#__PURE__*/React.createElement(HowItWorks, null), /*#__PURE__*/React.createElement(Features, {
+    useBlue: tweaks.useBlue
+  }), /*#__PURE__*/React.createElement(TrustedStrip, null), /*#__PURE__*/React.createElement(Testimonial, null), /*#__PURE__*/React.createElement(FAQ, null), /*#__PURE__*/React.createElement(FinalCTA, null), /*#__PURE__*/React.createElement(QtwFooter, null), /*#__PURE__*/React.createElement(MobileStickyCTA, null), /*#__PURE__*/React.createElement(TweaksPanel, {
+    title: "Tweaks"
+  }, /*#__PURE__*/React.createElement(TweakSection, {
+    title: "Typography"
+  }, /*#__PURE__*/React.createElement(TweakSelect, {
+    label: "Font pair",
+    value: tweaks.fontPair,
+    onChange: v => setTweak("fontPair", v),
+    options: Object.entries(FONT_PAIRS).map(([k, v]) => ({
+      value: k,
+      label: v.label
+    }))
+  })), /*#__PURE__*/React.createElement(TweakSection, {
+    title: "Color"
+  }, /*#__PURE__*/React.createElement(TweakToggle, {
+    label: "Use blue (#346897) as second accent",
+    value: tweaks.useBlue,
+    onChange: v => setTweak("useBlue", v)
+  }))));
+}
+const root = ReactDOM.createRoot(document.getElementById("app"));
+root.render(/*#__PURE__*/React.createElement(App, null));
+})();
+</script>
+
+<script>
+  // Hide splash once React rendered
+  const tryHide = () => {
+    const app = document.getElementById("app");
+    if (app && app.children.length > 0) {
+      document.getElementById("splash").classList.add("gone");
+    } else {
+      requestAnimationFrame(tryHide);
+    }
+  };
+  setTimeout(tryHide, 100);
+</script>
+</body>
+</html>
